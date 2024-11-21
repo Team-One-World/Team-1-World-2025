@@ -1,2 +1,2 @@
-# niomvan.ai-full
-our project code for the niomvan.ai team for the Microsoft Imagine Cup 2024-2025
+# Preferred full stack
+my preferred stackes for complex projects
