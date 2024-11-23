@@ -6,3 +6,11 @@ npm install -D tailwindcss postcss autoprefixer
 npm install axios react-router-dom jwt-decode
 npm install -D sass-embedded
 npm install
+
+
+
+VS code extentions:
+Tailwind CSS intellisense
+Inline fold
+vscode Icons
+github actions
