@@ -1,2 +1,10 @@
+# backend install
 python3 -m pip install --upgrade pip
 pip install -r backend/requirements.txt
+
+# frontend install
+cd frontend
+npm install -D tailwindcss postcss autoprefixer
+npm install axios react-router-dom jwt-decode
+npm install -D sass-embedded
+npm install
