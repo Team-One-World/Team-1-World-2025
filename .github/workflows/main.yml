@@ -26,6 +26,6 @@ jobs:
       - name: Run Tests
         run: |
           cd backend
-          pytest
+          python manage.py test
           cd ../frontend
           npm test
