@@ -8,7 +8,6 @@ npm install -D sass-embedded
 npm install
 
 
-
 # VS code extentions:
 # Tailwind CSS intellisense
 # Inline fold
