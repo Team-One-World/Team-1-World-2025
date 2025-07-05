@@ -1,2 +1,4 @@
-# Preferred full stack
-my preferred stack for complex projects
+# Team 1 World
+
+### Our team repository for Team 1 World. 
+
