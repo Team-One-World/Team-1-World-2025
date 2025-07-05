@@ -94,7 +94,7 @@ WSGI_APPLICATION = "site_settings.wsgi.application"
 
 DATABASES = {
     "default": dj_database_url.config(
-        default="postgresql://root:P9mIc7Tou2KxaWY1ATbTrxrHzLgkF13o@dpg-ct0ago68ii6s73fjvcrg-a.singapore-postgres.render.com/db_0yy4",
+        default="postgresql://neondb_owner:npg_ix1ON2UQuryk@ep-red-dream-a94jldc6-pooler.gwc.azure.neon.tech/neondb?sslmode=require&channel_binding=require",
         conn_max_age=600
     )
 }
