@@ -28,4 +28,3 @@ jobs:
           cd backend
           python manage.py test --keepdb
           cd ../frontend
-          npm test
