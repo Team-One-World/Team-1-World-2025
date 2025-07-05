@@ -5,7 +5,7 @@ cd frontend
 npm install -D tailwindcss postcss autoprefixer
 npm install axios react-router-dom jwt-decode
 npm install -D sass-embedded
-npm install
+npm audit fix --force
 
 
 # # VS code extentions:
