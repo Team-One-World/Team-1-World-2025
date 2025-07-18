@@ -32,7 +32,8 @@ function Form({ route, method }) {
 };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col space-y-4 px-4 py-8 mt-8 bg-gray-100 rounded-md shadow-md max-w-md mx-auto">
+    <>
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 px-4 py-8 mt-8 bg-gray-100 rounded-md shadow-md max-w-md mx-auto">
         <h1 className="text-2xl font-medium text-center">{name}</h1>
         <input
             className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:border-sky-500"
@@ -52,7 +53,31 @@ function Form({ route, method }) {
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded-md px-4" type="submit">
             {name}
         </button>
-    </form>
+      </form>
+      <div className="text-center mt-4">
+        {method === "login" ? (
+          <p className="text-gray-700">
+            New here?{" "}
+            <a
+              href="/register"
+              className="text-blue-600 hover:underline font-semibold"
+            >
+              Register now!
+            </a>
+          </p>
+        ) : (
+          <p className="text-gray-700">
+            Already have an account?{" "}
+            <a
+              href="/login"
+              className="text-blue-600 hover:underline font-semibold"
+            >
+              Login here!
+            </a>
+          </p>
+        )}
+      </div>
+    </>
   );
 }
 
