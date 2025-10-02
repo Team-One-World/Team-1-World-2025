@@ -1,6 +1,19 @@
 import pandas as pd
 import numpy as np
 
+def generate_display_name(row, source_name, raw_df):
+    """Generate a unified display name for Kepler, K2, and TESS datasets."""
+    if source_name == "kepler":
+        return row["kepler_name"]
+    
+    elif source_name == "k2":
+        return row["k2_name"]
+    
+    elif source_name == "tess":
+        return f"TOI-{row['toi']}"
+    
+    return "Unknown"
+
 
 COLUMN_MAPPING = {
     'disposition':       {'kepler': 'koi_disposition', 'k2': 'disposition',   'tess': 'tfopwg_disp'},
@@ -15,13 +28,17 @@ COLUMN_MAPPING = {
     'fp_flag_ss':        {'kepler': 'koi_fpflag_ss',   'k2': None,            'tess': None},
     'fp_flag_co':        {'kepler': 'koi_fpflag_co',   'k2': None,            'tess': None},
     'fp_flag_ec':        {'kepler': 'koi_fpflag_ec',   'k2': None,            'tess': None},
+    'ra':                {'kepler': 'koi_steff',       'k2': 'ra',            'tess': 'ra'},
+    'dec':               {'kepler': 'koi_steff',       'k2': 'dec',           'tess': 'dec'},
+    'sma':               {'kepler': 'koi_sma',         'k2': 'pl_orbsmax',    'tess': None},
 }
 
 TARGET_MAP = {
-    'kepler': {'CONFIRMED': 1, 'FALSE POSITIVE': 0},
-    'k2':     {'CONFIRMED': 1, 'FALSE POSITIVE': 0, 'CANDIDATE': np.nan},
-    'tess':   {'CP': 1, 'FP': 0, 'PC': np.nan}
+    'kepler': {'CONFIRMED': 1, 'FALSE POSITIVE': 0, 'CANDIDATE': 2},
+    'k2':     {'CONFIRMED': 1, 'FALSE POSITIVE': 0, 'CANDIDATE': 2},
+    'tess':   {'CP': 1, 'FP': 0, 'PC': 2}
 }
+
 
 
 def process_dataset(filepath, source_name):
@@ -54,11 +71,18 @@ def process_dataset(filepath, source_name):
 
     processed_df = pd.DataFrame(processed_cols)
 
+    # Add display_name column
+    processed_df['display_name'] = [
+        generate_display_name(raw_row, source_name, df)
+        for _, raw_row in df.iterrows()
+    ]
+
+
     disposition_map = TARGET_MAP[source_name]
     processed_df['disposition'] = processed_df['disposition'].map(disposition_map)
     
-    # Drop rows that are candidates or have no disposition
-    processed_df.dropna(subset=['disposition'], inplace=True)
+    # Drop only rows with no disposition at all
+    processed_df = processed_df[processed_df['disposition'].notna()]
     processed_df['disposition'] = processed_df['disposition'].astype(int)
 
     processed_df['source'] = source_name
@@ -112,7 +136,8 @@ df_final = pd.get_dummies(df_merged, columns=['source'], drop_first=True)
 output_filename = 'data/Full Data.csv'
 df_final.to_csv(output_filename, index=False)
 
-print(f"\n✅ Success! Cleaned and merged data saved to '{output_filename}'")
+print(f"\nSuccess! Cleaned and merged data saved to '{output_filename}'")
+
 print("\nFinal DataFrame Info:")
 df_final.info()
 print("\nFirst 5 rows of the final dataset:")

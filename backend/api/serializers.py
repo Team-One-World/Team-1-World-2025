@@ -1,13 +1,35 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
+import math
+from .models import Star, Planet
 
-class UserSerializer(serializers.ModelSerializer):
+class SafeFloatField(serializers.FloatField):
+    def to_representation(self, value):
+        if value is None:
+            return None
+        if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
+            return None
+        return super().to_representation(value)
+
+class StarSerializer(serializers.ModelSerializer):
+    ra = SafeFloatField()
+    dec = SafeFloatField()
+    star_temp = SafeFloatField()
+    star_radius = SafeFloatField()
+    sy_dist = SafeFloatField()
+
     class Meta:
-        model = User
-        fields = ["id", "username", "password"]
-        extra_kwargs = {"password": {"write_only": True}}
+        model = Star
+        fields = "__all__"
 
-    def create(self, validated_data):
-        print(validated_data)
-        user = User.objects.create_user(**validated_data)
-        return user
+class PlanetSerializer(serializers.ModelSerializer):
+    orbital_period = SafeFloatField()
+    radius = SafeFloatField()
+    ra = SafeFloatField()
+    dec = SafeFloatField()
+    duration = SafeFloatField()
+    transit_depth = SafeFloatField()
+    model_snr = SafeFloatField()
+
+    class Meta:
+        model = Planet
+        fields = "__all__"

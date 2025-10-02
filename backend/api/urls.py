@@ -1,4 +1,9 @@
 from django.urls import path
-from . import views
+from .views import *
 
-urlpatterns = []
+urlpatterns = [
+    path('predict/', PredictPlanet.as_view()),
+    path('planets/', PlanetList.as_view()),
+    path('stars/', StarList.as_view()),
+    path('stars/<int:star_id>/planets/', StarPlanetList.as_view(), name='star-planet-list'),
+]
