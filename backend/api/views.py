@@ -14,12 +14,12 @@ class PredictPlanet(APIView):
         
         # Fields required for classification
         classification_fields = [
-            'ra', 'dec', 'duration', 'transit_depth', 
+            'orbital_period', 'radius', 'duration', 'transit_depth', 
             'star_temp', 'star_radius', 'model_snr'
         ]
         
         # Fields required for saving a planet
-        save_fields = classification_fields + ['name', 'orbital_period', 'radius', 'star_name']
+        save_fields = classification_fields + ['name', 'ra', 'dec', 'star_name']
 
         has_classification_fields = all(field in data and data[field] is not None for field in classification_fields)
         has_save_fields = all(field in data and data[field] is not None for field in save_fields)
