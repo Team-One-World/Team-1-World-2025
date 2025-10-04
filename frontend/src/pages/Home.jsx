@@ -158,55 +158,59 @@ function Home({ planets, setPlanets }) {
     }
 
     return (
-        <div className="min-h-screen p-4 sm:p-6 lg:p-8 fade-in">
-            <header className="text-center mb-10">
-                <h1 className="text-4xl sm:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-600">
-                    Exo-Planet Predictive Analysis
+        <div className="min-h-screen p-4 sm:p-6 lg:p-8 fade-in text-white">
+            <header className="text-center mb-12">
+                <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+                    Team One World
                 </h1>
-                <p className="text-gray-400 mt-2">Explore, Predict, and Visualize the Cosmos</p>
+                <p className="text-gray-400 mt-4 text-lg md:text-xl max-w-3xl mx-auto">Harness the power of machine learning to classify celestial bodies and visualize entire star systems in an interactive 3D environment.</p>
             </header>
             
             <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column: Prediction Forms & Results */}
                 <div className="lg:col-span-1 space-y-8">
                     <div className="glass-panel p-6 fade-in">
-                        <h2 className="text-2xl font-bold mb-4">Predict Planet Classification</h2>
+                        <h2 className="text-2xl font-bold mb-6 text-center">Predict Planet Classification</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <input type="text" name="name" placeholder="Planet Name" value={formData.name} onChange={handleChange} className="input-field" />
-                                <input type="text" name="star_name" placeholder="Star Name" value={formData.star_name} onChange={handleChange} required className="input-field" />
                                 <input type="number" name="orbital_period" placeholder="Orbital Period" value={formData.orbital_period} onChange={handleChange} required className="input-field" />
                                 <input type="number" name="radius" placeholder="Radius" value={formData.radius} onChange={handleChange} required className="input-field" />
-                                <input type="number" name="ra" placeholder="RA" value={formData.ra} onChange={handleChange} required className="input-field" />
-                                <input type="number" name="dec" placeholder="Dec" value={formData.dec} onChange={handleChange} required className="input-field" />
                                 <input type="number" name="duration" placeholder="Duration" value={formData.duration} onChange={handleChange} required className="input-field" />
                                 <input type="number" name="transit_depth" placeholder="Transit Depth" value={formData.transit_depth} onChange={handleChange} required className="input-field" />
                                 <input type="number" name="star_temp" placeholder="Star Temp" value={formData.star_temp} onChange={handleChange} required className="input-field" />
                                 <input type="number" name="star_radius" placeholder="Star Radius" value={formData.star_radius} onChange={handleChange} required className="input-field" />
                                 <input type="number" name="model_snr" placeholder="Model SNR" value={formData.model_snr} onChange={handleChange} required className="input-field" />
                             </div>
-                            <button type="submit" className="btn-primary" disabled={loading}>
+                            <h3 className="text-lg font-semibold pt-4">Optional Fields:</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/*- Optional Fields -*/}
+                                <input type="text" name="name" placeholder="Planet Name" value={formData.name} onChange={handleChange} className="input-field" />
+                                <input type="text" name="star_name" placeholder="Star Name" value={formData.star_name} onChange={handleChange} className="input-field" />
+                                <input type="number" name="ra" placeholder="RA" value={formData.ra} onChange={handleChange} className="input-field" />
+                                <input type="number" name="dec" placeholder="Dec" value={formData.dec} onChange={handleChange} className="input-field" />
+                            </div>
+                            <button type="submit" className="btn-primary w-full" disabled={loading}>
                                 {loading ? <LoadingSpinner size={24} /> : 'Predict'}
                             </button>
                         </form>
                     </div>
 
                     <div className="glass-panel p-6 fade-in" style={{animationDelay: '0.1s'}}>
-                        <h3 className="text-xl font-bold mb-4">Or Upload a CSV</h3>
+                        <h3 className="text-2xl font-bold mb-4 text-center">Or Upload a CSV</h3>
                         <input type="file" accept=".csv" onChange={handleFileChange} className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                        <button onClick={handleCsvSubmit} disabled={csvData.length === 0 || loading} className="mt-4 btn-primary disabled:bg-gray-500 disabled:transform-none">
+                        <button onClick={handleCsvSubmit} disabled={csvData.length === 0 || loading} className="mt-4 btn-primary w-full disabled:bg-gray-500 disabled:transform-none">
                             {loading ? <LoadingSpinner size={24} /> : 'Submit CSV'}
                         </button>
                     </div>
 
                     {predictionResults.length > 0 && (
                         <div className="glass-panel p-6 fade-in" style={{animationDelay: '0.2s'}}>
-                            <h3 className="text-xl font-bold mb-4">Prediction Results</h3>
-                            <ul className="space-y-3">
+                            <h3 className="text-2xl font-bold mb-4 text-center">Prediction Results</h3>
+                            <ul className="space-y-4">
                                 {predictionResults.map((result, index) => (
-                                    <li key={index} className="bg-gray-700 bg-opacity-50 p-3 rounded-md">
-                                        <p><strong>Name:</strong> {result.name}</p>
-                                        <p><strong>Classification:</strong> <span className="font-semibold text-purple-300">{result.classification}</span></p>
+                                    <li key={index} className="bg-gray-700 bg-opacity-50 p-4 rounded-lg border border-gray-600">
+                                        <p className="font-bold text-lg text-purple-300">{result.name || 'Unnamed Planet'}</p>
+                                        <p><strong>Classification:</strong> <span className="font-semibold text-teal-300">{result.classification}</span></p>
                                         <p><strong>Confidence:</strong> <span className="font-semibold text-green-300">{(result.confidence * 100).toFixed(2)}%</span></p>
                                     </li>
                                 ))}
@@ -218,11 +222,11 @@ function Home({ planets, setPlanets }) {
                 {/* Right Column: Visualization & Charts */}
                 <div className="lg:col-span-2 space-y-8">
                     <div className="glass-panel p-6 fade-in" style={{animationDelay: '0.3s'}}>
-                        <h2 className="text-2xl font-bold mb-4 text-center">Interactive Galaxy</h2>
+                        <h2 className="text-3xl font-bold mb-4 text-center">Interactive Galaxy</h2>
                         <VisualizationShell stars={stars} fetchPlanetsForStar={fetchPlanetsForStar} isFullscreen={isVisualizationFullscreen} onEnter={enterVisualization} onExit={exitVisualization} />
                     </div>
                     <div className="glass-panel p-6 fade-in" style={{animationDelay: '0.4s'}}>
-                        <h2 className="text-2xl font-bold mb-4 text-center">Stellar Analytics</h2>
+                        <h2 className="text-3xl font-bold mb-4 text-center">Stellar Analytics</h2>
                         <ChartsPanel sampleStars={stars} />
                     </div>
                 </div>

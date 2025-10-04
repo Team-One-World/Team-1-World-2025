@@ -1,20 +1,20 @@
+import { Link } from "react-router-dom";
+
 function NotFound() {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <h1 className="text-9xl   
-   font-bold text-gray-800 mb-8 typewriter">404</h1>
-        <p className="text-2xl font-medium text-gray-600 mb-8 typewriter">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
+        <h1 className="text-9xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-8 typewriter">404</h1>
+        <p className="text-2xl font-medium text-gray-400 mb-8 typewriter">
           The page you're looking for doesn't exist.
         </p>
-        <a
-          href="/"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        <Link
+          to="/"
+          className="btn-primary"
         >
           Go Home
-        </a>
+        </Link>
       </div>
     );
 }
-  
-  
-  export default NotFound;
+
+export default NotFound;

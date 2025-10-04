@@ -1,3 +1,5 @@
+//delete
+
 import React from 'react';
 
 const FloatingActionButton = ({ children, onClick, position, icon }) => {

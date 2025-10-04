@@ -7,13 +7,14 @@ class Star(models.Model):
     sy_dist = models.FloatField(null=True, blank=True)
     star_temp = models.FloatField(null=True, blank=True)
     star_radius = models.FloatField(null=True, blank=True)
+    user_inputted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
 
 class Planet(models.Model):
     star = models.ForeignKey(Star, on_delete=models.CASCADE, related_name='planets', null=True)
-    name = models.CharField(max_length=100, blank=True)
+    name = models.CharField(max_length=100, unique=True, blank=True)
     orbital_period = models.FloatField(null=True, blank=True)
     radius = models.FloatField(null=True, blank=True)
     ra = models.FloatField(null=True, blank=True)
@@ -24,6 +25,7 @@ class Planet(models.Model):
     star_radius = models.FloatField(null=True, blank=True)
     model_snr = models.FloatField(null=True, blank=True)
     semi_major_axis = models.FloatField(null=True, blank=True)
+    user_inputted = models.BooleanField(default=False)
 
     classification = models.CharField(max_length=20)
     confidence = models.FloatField(null=True, blank=True)

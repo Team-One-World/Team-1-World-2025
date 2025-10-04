@@ -11,36 +11,72 @@ class PredictPlanet(APIView):
 
     def post(self, request):
         data = request.data
-        classification, confidence = classify(data) # type: ignore
+        
+        # Fields required for classification
+        classification_fields = [
+            'ra', 'dec', 'duration', 'transit_depth', 
+            'star_temp', 'star_radius', 'model_snr'
+        ]
+        
+        # Fields required for saving a planet
+        save_fields = classification_fields + ['name', 'orbital_period', 'radius', 'star_name']
 
-        star_name = data.get('star_name', 'Unknown Star')
-        star, _ = Star.objects.get_or_create(
-            name=star_name,
-            defaults={
-                'ra': data.get('ra'),
-                'dec': data.get('dec'),
-                'star_temp': data.get('star_temp'),
-                'star_radius': data.get('star_radius'),
-            }
-        )
+        has_classification_fields = all(field in data and data[field] is not None for field in classification_fields)
+        has_save_fields = all(field in data and data[field] is not None for field in save_fields)
 
-        planet = Planet.objects.create(
-            star=star,
-            name=data.get('name'),
-            orbital_period=data.get('orbital_period'),
-            radius=data.get('radius'),
-            ra=data.get('ra'),
-            dec=data.get('dec'),
-            duration=data.get('duration'),
-            transit_depth=data.get('transit_depth'),
-            star_temp=data.get('star_temp'),
-            star_radius=data.get('star_radius'),
-            model_snr=data.get('model_snr'),
-            classification=classification,
-            confidence=confidence
-        )
-        serializer = PlanetSerializer(planet)
-        return Response(serializer.data)
+        if not has_classification_fields:
+            return Response(
+                {"error": "Missing one or more fields required for classification."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        classification, confidence = classify(data)
+
+        if has_save_fields:
+            # Save the new planet and star
+            star_name = data.get('star_name')
+            if star_name:
+                star_name += " (user inputted)"
+
+            star, created = Star.objects.get_or_create(
+                name=star_name,
+                defaults={
+                    'ra': data.get('ra'),
+                    'dec': data.get('dec'),
+                    'star_temp': data.get('star_temp'),
+                    'star_radius': data.get('star_radius'),
+                    'user_inputted': True,
+                }
+            )
+            if not created:
+                star.user_inputted = True
+                star.save()
+
+            planet_name = data.get('name', '') + " (user inputted)"
+            planet = Planet.objects.create(
+                user_inputted=True,
+                star=star,
+                name=planet_name,
+                orbital_period=data.get('orbital_period'),
+                radius=data.get('radius'),
+                ra=data.get('ra'),
+                dec=data.get('dec'),
+                duration=data.get('duration'),
+                transit_depth=data.get('transit_depth'),
+                star_temp=data.get('star_temp'),
+                star_radius=data.get('star_radius'),
+                model_snr=data.get('model_snr'),
+                classification=classification,
+                confidence=confidence
+            )
+            serializer = PlanetSerializer(planet)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            # Just return the classification
+            return Response({
+                "classification": classification,
+                "confidence": confidence
+            }, status=status.HTTP_200_OK)
 
 class PlanetList(APIView):
     authentication_classes = []

@@ -168,23 +168,26 @@ export default function Galaxy({ stars = [], fetchPlanetsForStar, isFullscreen =
       focusedStarRef.current = null;
       focusLight.visible = false;
       
-      // Show original stars
+      // Show original stars and background
       starGroup.visible = true;
       starfield.visible = true;
       
-      // Clear focused view
+      // Clear the focused star and its planets
       clearFocusGroup();
       clearPlanets();
       
-      // Reset fog
+      // Reset fog to galaxy view settings
       scene.fog = new THREE.FogExp2(0x01010f, 0.00015);
       
-      // Reset all star labels
+      // *** MODIFICATION HERE ***
+      // Ensure all star labels in the main view are hidden again
       starGroup.children.forEach(s => {
-        if (s.userData.label) s.userData.label.visible = false;
+        if (s.userData.label) {
+          s.userData.label.visible = false;
+        }
       });
       
-      // Reset camera
+      // Reset camera to initial position
       camera.position.copy(initialCameraPosition);
       controls.target.set(0, 0, 0);
       controls.update();
