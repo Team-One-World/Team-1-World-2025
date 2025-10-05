@@ -6,6 +6,7 @@ django-cors-headers
 dj-database-url
 psycopg2-binary
 python-dotenv
+gunicorn
 
 # --- HTTP and Auth ---
 requests
