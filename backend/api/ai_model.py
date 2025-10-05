@@ -5,7 +5,7 @@ import os
 # Get the directory of the current file
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # Construct the full path to the model file
-model_path = os.path.join(current_dir, 'exoplanet_classifier_best.h5')
+model_path = os.path.join(current_dir, 'model.keras')
 
 # Load the pre-trained model
 model = tf.keras.models.load_model(model_path)
