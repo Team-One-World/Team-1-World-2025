@@ -9,9 +9,9 @@ BASE_DIR = os.path.join(
 
 # Files and their corresponding URLs
 FILES_TO_DOWNLOAD = {
-    "model.keras": "https://huggingface.co/nimitjalan/team1world/resolve/main/model.keras",
-    "scaler.joblib": "https://huggingface.co/nimitjalan/team1world/resolve/main/scaler.joblib",
-    "label_encoder.joblib": "https://huggingface.co/nimitjalan/team1world/resolve/main/label_encoder.joblib",
+    "model.keras": "https://huggingface.co/nimitjalan/1-world-2025-final/resolve/main/model.keras",
+    "scaler.joblib": "https://huggingface.co/nimitjalan/1-world-2025-final/resolve/main/scaler.joblib",
+    "label_encoder.joblib": "https://huggingface.co/nimitjalan/1-world-2025-final/resolve/main/label_encoder.joblib",
 }
 
 class Command(BaseCommand):
