@@ -13,6 +13,7 @@ requests
 PyJWT
 python-dateutil
 pytz
+whitenoise
 
 # --- Data Science / ML ---
 numpy

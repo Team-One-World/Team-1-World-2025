@@ -152,3 +152,6 @@ CORS_ALLOWS_CREDENTIALS = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# WhiteNoise configuration (recommended for Render)
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
