@@ -5,7 +5,7 @@ import requests
 # Path where the model will live for API usage
 BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "api")
 MODEL_FILE = os.path.join(BASE_DIR, "model.keras")
-MODEL_URL = "https://huggingface.co/<username>/<repo-name>/resolve/main/model.keras"
+MODEL_URL = "https://huggingface.co/nimitjalan/team1world/resolve/main/model.keras"
 
 class Command(BaseCommand):
     help = "Download Keras model from Hugging Face"
