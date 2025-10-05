@@ -5,6 +5,7 @@ from .models import Planet, Star
 from .serializers import PlanetSerializer, StarSerializer
 from .ai_model import classify
 
+
 class PredictPlanet(APIView):
     print("PredictPlanet view initialized")
     authentication_classes = []
@@ -97,6 +98,7 @@ class PredictPlanet(APIView):
             {"classification": classification, "confidence": confidence},
             status=status.HTTP_200_OK
         )
+
 
 class PlanetList(APIView):
     authentication_classes = []
