@@ -2,22 +2,36 @@ from django.core.management.base import BaseCommand
 import os
 import requests
 
-# Path where the model will live for API usage
-BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-MODEL_FILE = os.path.join(BASE_DIR, "", "model.keras")
-MODEL_URL = "https://huggingface.co/nimitjalan/team1world/resolve/main/model.keras"
+# Base directory for storing models
+BASE_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
+
+# Files and their corresponding URLs
+FILES_TO_DOWNLOAD = {
+    "model.keras": "https://huggingface.co/nimitjalan/team1world/resolve/main/model.keras",
+    "scaler.joblib": "https://huggingface.co/nimitjalan/team1world/resolve/main/scaler.joblib",
+    "label_encoder.joblib": "https://huggingface.co/nimitjalan/team1world/resolve/main/label_encoder.joblib",
+}
 
 class Command(BaseCommand):
-    help = "Download Keras model from Hugging Face"
+    help = "Download model and related files from Hugging Face"
 
     def handle(self, *args, **options):
-        if not os.path.exists(MODEL_FILE):
-            self.stdout.write("Downloading model.keras from Hugging Face...")
-            r = requests.get(MODEL_URL, stream=True)
-            os.makedirs(BASE_DIR, exist_ok=True)
-            with open(MODEL_FILE, "wb") as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
-            self.stdout.write(self.style.SUCCESS(f"Downloaded model to {MODEL_FILE}"))
-        else:
-            self.stdout.write("model.keras already exists, skipping download.")
+        os.makedirs(BASE_DIR, exist_ok=True)
+        
+        for filename, url in FILES_TO_DOWNLOAD.items():
+            file_path = os.path.join(BASE_DIR, filename)
+            
+            if not os.path.exists(file_path):
+                self.stdout.write(f"Downloading {filename} from Hugging Face...")
+                response = requests.get(url, stream=True)
+                response.raise_for_status()  # Will stop if download fails
+                
+                with open(file_path, "wb") as f:
+                    for chunk in response.iter_content(chunk_size=8192):
+                        f.write(chunk)
+                        
+                self.stdout.write(self.style.SUCCESS(f"Downloaded {filename} to {file_path}"))
+            else:
+                self.stdout.write(f"{filename} already exists, skipping download.")
