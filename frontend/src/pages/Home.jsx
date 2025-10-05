@@ -24,6 +24,8 @@ function Home({ planets, setPlanets }) {
         star_temp: "",
         star_radius: "",
         model_snr: "",
+        sy_dist: "", // ✅ New: Star System Distance
+        semi_major_axis: "", // ✅ New: Planet Semi-Major Axis
     });
 
     const requiredFields = [
@@ -90,7 +92,7 @@ function Home({ planets, setPlanets }) {
             const res = await api.post("/api/predict/", formData);
             setPredictionResults([res.data]);
             setPlanets((prev) => [...prev, res.data]);
-            getStars(); // Refresh stars after prediction
+            getStars(); // Refresh stars to potentially show new star data
         } catch (error) {
             console.error(error);
         } finally {
@@ -113,8 +115,9 @@ function Home({ planets, setPlanets }) {
                 star_temp: "star_temp",
                 star_radius: "star_radius",
                 model_snr: "model_snr",
-                pl_orbsmax: "semi_major_axis",
-                koi_sma: "semi_major_axis",
+                sy_dist: "sy_dist", // ✅ New: Map sy_dist
+                pl_orbsmax: "semi_major_axis", // ✅ Already there, but confirm correct target
+                koi_sma: "semi_major_axis",    // ✅ Already there, but confirm correct target
             };
 
             Papa.parse(file, {
@@ -134,15 +137,17 @@ function Home({ planets, setPlanets }) {
     const handleCsvSubmit = async () => {
         if (csvData.length === 0) return;
 
-        // Validate CSV rows
+        // Ensure these fields are also checked for CSV validity if they are expected in the CSV
+        // For now, only the original required fields are checked for classification.
+        // If sy_dist or semi_major_axis are required for saving, you'd add them here.
         const invalidRows = csvData.filter((row) =>
             requiredFields.some((field) => row[field] === undefined || row[field] === "")
         );
 
         if (invalidRows.length > 0) {
             alert(
-                `Error: ${invalidRows.length} row(s) are missing required fields.\n` +
-                    `Data must be in this format: ${requiredFields.join(", ")}`
+                `Error: ${invalidRows.length} row(s) are missing required classification fields.\n` +
+                    `Data must include: ${requiredFields.join(", ")}`
             );
             return;
         }
@@ -153,10 +158,10 @@ function Home({ planets, setPlanets }) {
             const results = await Promise.allSettled(promises);
             const predictions = results
                 .filter((r) => r.status === "fulfilled")
-                .map((r) => r.value.data);
+                .map((r) => r.value.data); // Assuming value.data is where your prediction is
             setPredictionResults(predictions);
             setPlanets((prev) => [...prev, ...predictions]);
-            getStars(); // Refresh stars after CSV submission
+            getStars(); // Refresh stars to potentially show new star data
         } catch (error) {
             console.error(error);
         } finally {
@@ -199,9 +204,7 @@ function Home({ planets, setPlanets }) {
             </header>
 
             <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Left Column: Prediction Forms & Results */}
                 <div className="lg:col-span-1 space-y-8">
-                    {/* Predict Planet Form */}
                     <div className="glass-panel p-6 fade-in">
                         <h2 className="text-2xl font-bold mb-6 text-center">Predict Planet Classification</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
@@ -214,29 +217,40 @@ function Home({ planets, setPlanets }) {
                                 <input type="number" name="star_radius" placeholder="Star Radius" value={formData.star_radius} onChange={handleChange} required className="input-field" />
                                 <input type="number" name="model_snr" placeholder="Model SNR" value={formData.model_snr} onChange={handleChange} required className="input-field" />
                             </div>
+
                             <h3 className="text-lg font-semibold pt-4">Optional Fields:</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input type="text" name="name" placeholder="Planet Name" value={formData.name} onChange={handleChange} className="input-field" />
                                 <input type="text" name="star_name" placeholder="Star Name" value={formData.star_name} onChange={handleChange} className="input-field" />
-                                <input type="number" name="ra" placeholder="RA" value={formData.ra} onChange={handleChange} className="input-field" />
-                                <input type="number" name="dec" placeholder="Dec" value={formData.dec} onChange={handleChange} className="input-field" />
+                                <input type="number" name="ra" placeholder="RA (Star)" value={formData.ra} onChange={handleChange} className="input-field" />
+                                <input type="number" name="dec" placeholder="Dec (Star)" value={formData.dec} onChange={handleChange} className="input-field" />
+                                <input type="number" name="sy_dist" placeholder="Star System Distance (pc)" value={formData.sy_dist} onChange={handleChange} className="input-field" /> {/* ✅ New input */}
+                                <input type="number" name="semi_major_axis" placeholder="Semi-Major Axis (AU)" value={formData.semi_major_axis} onChange={handleChange} className="input-field" /> {/* ✅ New input */}
                             </div>
+
                             <button type="submit" className="btn-primary w-full" disabled={loadingPrediction}>
                                 {loadingPrediction ? <LoadingSpinner size={24} /> : "Predict"}
                             </button>
                         </form>
                     </div>
 
-                    {/* CSV Upload */}
                     <div className="glass-panel p-6 fade-in" style={{ animationDelay: "0.1s" }}>
                         <h3 className="text-2xl font-bold mb-4 text-center">Or Upload a CSV</h3>
-                        <input type="file" accept=".csv" onChange={handleFileChange} className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                        <button onClick={handleCsvSubmit} disabled={csvData.length === 0 || loadingCSV} className="mt-4 btn-primary w-full disabled:bg-gray-500 disabled:transform-none">
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileChange}
+                            className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                        />
+                        <button
+                            onClick={handleCsvSubmit}
+                            disabled={csvData.length === 0 || loadingCSV}
+                            className="mt-4 btn-primary w-full disabled:bg-gray-500 disabled:transform-none"
+                        >
                             {loadingCSV ? <LoadingSpinner size={24} /> : "Submit CSV"}
                         </button>
                     </div>
 
-                    {/* Prediction Results */}
                     {predictionResults.length > 0 && (
                         <div className="glass-panel p-6 fade-in" style={{ animationDelay: "0.2s" }}>
                             <h3 className="text-2xl font-bold mb-4 text-center">Prediction Results</h3>
@@ -246,6 +260,8 @@ function Home({ planets, setPlanets }) {
                                         <p className="font-bold text-lg text-purple-300">{result.name || "Unnamed Planet"}</p>
                                         <p><strong>Classification:</strong> <span className="font-semibold text-teal-300">{result.classification}</span></p>
                                         <p><strong>Confidence:</strong> <span className="font-semibold text-green-300">{(result.confidence * 100).toFixed(2)}%</span></p>
+                                        {result.sy_dist && <p><strong>Star System Distance:</strong> {result.sy_dist} pc</p>} {/* ✅ Display sy_dist */}
+                                        {result.semi_major_axis && <p><strong>Semi-Major Axis:</strong> {result.semi_major_axis} AU</p>} {/* ✅ Display semi_major_axis */}
                                     </li>
                                 ))}
                             </ul>
@@ -253,7 +269,6 @@ function Home({ planets, setPlanets }) {
                     )}
                 </div>
 
-                {/* Right Column: Visualization & Charts */}
                 <div className="lg:col-span-2 space-y-8">
                     <div className="glass-panel p-6 fade-in" style={{ animationDelay: "0.3s" }}>
                         <h2 className="text-3xl font-bold mb-4 text-center">Interactive Galaxy</h2>
