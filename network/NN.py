@@ -36,9 +36,10 @@ def make_label(row):
 df['label'] = df.apply(make_label, axis=1)
 print(df['label'].value_counts())
 
+# Removed source_kepler and source_tess from features
 features = [
     'period','duration','transit_depth','planet_radius',
-    'star_temp','star_radius','model_snr','source_kepler','source_tess'
+    'star_temp','star_radius','model_snr'
 ]
 X = df[features].copy()
 y = df['label'].copy()
@@ -53,10 +54,6 @@ for c in ['transit_depth','star_temp']:
 for c in num_cols:
     if X[c].isna().any():
         X[c].fillna(X[c].median(), inplace=True)
-
-# Ensure integer types
-X['source_kepler'] = X['source_kepler'].astype(int)
-X['source_tess'] = X['source_tess'].astype(int)
 
 # Log transforms
 X['transit_depth_log'] = np.log1p(X['transit_depth'])
@@ -107,7 +104,7 @@ model.summary()
 
 # ---------------- Training ----------------
 es = callbacks.EarlyStopping(monitor='val_loss', patience=8, restore_best_weights=True)
-mc_path = 'exoplanet_classifier_best.h5'
+mc_path = 'exoplanet_classifier_best.keras'
 mc = callbacks.ModelCheckpoint(mc_path, monitor='val_loss', save_best_only=True)
 
 history = model.fit(
@@ -147,16 +144,16 @@ plt.tight_layout()
 plt.show()
 
 # ---------------- Save Model ----------------
-model.save('exoplanet_classifier_final.h5')
+model.save('exoplanet_classifier_final.keras')
 joblib.dump(scaler, 'scaler.joblib')
 joblib.dump(le, 'label_encoder.joblib')
 
-print("Saved: exoplanet_classifier_best.h5 (checkpoint), exoplanet_classifier_final.h5, scaler.joblib, label_encoder.joblib")
+print("Saved: exoplanet_classifier_best.keras (checkpoint), exoplanet_classifier_final.keras, scaler.joblib, label_encoder.joblib")
 
 # ---------------- Interactive Prediction ----------------
 scaler = joblib.load('scaler.joblib')
 le = joblib.load('label_encoder.joblib')
-model = load_model('exoplanet_classifier_final.h5')
+model = load_model('exoplanet_classifier_final.keras')
 
 print("Enter the following parameters for prediction:\n")
 
@@ -165,8 +162,6 @@ duration = float(input("Transit duration (hours): "))
 star_temp = float(input("Star temperature (K): "))
 star_radius = float(input("Star radius (in solar radii): "))
 model_snr = float(input("Model SNR (signal-to-noise ratio): "))
-source_kepler = int(input("Source Kepler (1 if data from Kepler, else 0): "))
-source_tess = int(input("Source TESS (1 if data from TESS, else 0): "))
 transit_depth = float(input("Transit depth (ppm): "))
 planet_radius = float(input("Planet radius (in Earth radii): "))
 
@@ -175,14 +170,12 @@ planet_radius_log = np.log1p(planet_radius)
 
 cols = [
     'period', 'duration', 'star_temp', 'star_radius',
-    'model_snr', 'source_kepler', 'source_tess',
-    'transit_depth_log', 'planet_radius_log'
+    'model_snr', 'transit_depth_log', 'planet_radius_log'
 ]
 
 xrow = pd.DataFrame([[
     period, duration, star_temp, star_radius,
-    model_snr, source_kepler, source_tess,
-    transit_depth_log, planet_radius_log
+    model_snr, transit_depth_log, planet_radius_log
 ]], columns=cols)
 
 xscaled = scaler.transform(xrow)
