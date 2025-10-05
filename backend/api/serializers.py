@@ -33,3 +33,4 @@ class PlanetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Planet
         fields = "__all__"
+        
