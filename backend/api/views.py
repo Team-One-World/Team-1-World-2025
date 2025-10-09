@@ -93,25 +93,23 @@ class PredictPlanet(APIView):
                 name=data.get("name") + " (user inputted)",
                 orbital_period=data.get("orbital_period"),
                 radius=data.get("radius"),
-                ra=data.get("ra"), # Planet RA/Dec might be slightly different than Star's, keep for now
-                dec=data.get("dec"), # Assuming it means the planet's apparent RA/Dec or star's
+                ra=data.get("ra"),
+                dec=data.get("dec"),
                 duration=data.get("duration"),
                 transit_depth=data.get("transit_depth"),
                 star_temp=data.get("star_temp"), # These are properties of the star, but might be duplicated for planet data completeness
                 star_radius=data.get("star_radius"),
                 model_snr=data.get("model_snr"),
-                semi_major_axis=data.get("semi_major_axis"), # ✅ Save semi_major_axis to Planet
+                semi_major_axis=data.get("semi_major_axis"),
                 classification=classification,
                 confidence=confidence,
             )
             serializer = PlanetSerializer(planet)
-            # Add classification and confidence to the serialized data if not already there
             response_data = serializer.data
             response_data['classification'] = classification
             response_data['confidence'] = confidence
             return Response(response_data, status=status.HTTP_201_CREATED)
 
-        # Otherwise — only return the classification
         return Response(
             {"classification": classification, "confidence": confidence},
             status=status.HTTP_200_OK

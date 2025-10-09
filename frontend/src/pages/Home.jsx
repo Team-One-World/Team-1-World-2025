@@ -24,8 +24,8 @@ function Home({ planets, setPlanets }) {
         star_temp: "",
         star_radius: "",
         model_snr: "",
-        sy_dist: "", // ✅ New: Star System Distance
-        semi_major_axis: "", // ✅ New: Planet Semi-Major Axis
+        sy_dist: "",
+        semi_major_axis: "",
     });
 
     const requiredFields = [
