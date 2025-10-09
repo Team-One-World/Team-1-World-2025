@@ -55,12 +55,65 @@ def load_resources():
         print(f"❌ Failed to load ML resources: {e}")
         model = scaler = label_encoder = None
 
-
+# ---------------- Classification Function ----------------
 def classify(data: dict):
-    if model is None or scaler is None or label_encoder is None:
-        load_resources()  # Try loading now
-        if model is None:
-            raise RuntimeError("Model or scaler not loaded properly.")
+    """
+    Classify a planet candidate using the trained deep learning model.
 
-    # --- Classification logic (same as yours) ---
-    ...
+    Args:
+        data (dict): Dictionary containing the required numeric fields:
+            - orbital_period
+            - duration
+            - transit_depth
+            - radius
+            - star_temp
+            - star_radius
+            - model_snr
+
+    Returns:
+        tuple: (classification_label: str, confidence_score: float)
+    """
+
+    if model is None or scaler is None or label_encoder is None:
+        raise RuntimeError("Model or scaler not loaded properly.")
+
+    # --- Step 1: Extract and clean fields ---
+    try:
+        # Convert all fields to float safely
+        period = float(data.get("orbital_period"))
+        duration = float(data.get("duration"))
+        transit_depth = float(data.get("transit_depth"))
+        planet_radius = float(data.get("radius"))
+        star_temp = float(data.get("star_temp"))
+        star_radius = float(data.get("star_radius"))
+        model_snr = float(data.get("model_snr"))
+    except (TypeError, ValueError):
+        raise ValueError("Invalid or missing numeric input field(s).")
+
+    # --- Step 2: Apply same preprocessing as training ---
+    transit_depth_log = np.log1p(transit_depth)
+    planet_radius_log = np.log1p(planet_radius)
+
+    # Same column order as training
+    columns = [
+        "period", "duration", "star_temp", "star_radius",
+        "model_snr", "transit_depth_log", "planet_radius_log"
+    ]
+
+    # Build a DataFrame for consistency with scaler
+    input_df = pd.DataFrame([[
+        period, duration, star_temp, star_radius,
+        model_snr, transit_depth_log, planet_radius_log
+    ]], columns=columns)
+
+    # Scale features
+    scaled_input = scaler.transform(input_df)
+
+    # --- Step 3: Predict ---
+    pred_proba = model.predict(scaled_input)[0]  # Shape: (num_classes,)
+    pred_index = int(np.argmax(pred_proba))
+    confidence = float(np.max(pred_proba))
+    pred_label = label_encoder.inverse_transform([pred_index])[0]
+
+    # --- Step 4: Return readable output ---
+    return pred_label, round(confidence, 4)
