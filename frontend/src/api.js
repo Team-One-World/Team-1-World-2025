@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ACCESS_TOKEN } from "./constants";
 
-const apiUrl = "https://team-1-world-2025.onrender.com/";
+const apiUrl = "https://fd636772af72.ngrok-free.app//";
 // const apiUrl = "http://127.0.0.1:8000/";
 
 const api = axios.create({
