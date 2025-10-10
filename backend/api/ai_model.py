@@ -75,6 +75,9 @@ def classify(data: dict):
         tuple: (classification_label: str, confidence_score: float)
     """
 
+    load_resources()
+
+
     if model is None or scaler is None or label_encoder is None:
         raise RuntimeError("Model or scaler not loaded properly.")
 
