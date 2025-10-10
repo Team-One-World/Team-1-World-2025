@@ -1,4 +1,5 @@
 import os
+import requests
 import joblib
 import tensorflow as tf
 import numpy as np
@@ -29,7 +30,7 @@ def load_resources():
     if not os.path.exists(MODEL_PATH):
         print(f"❌ Model not found at {MODEL_PATH}")
         # Attempt to download missing files
-        import requests
+        
         os.makedirs(BASE_DIR, exist_ok=True)
         for filename, url in FILES_TO_DOWNLOAD.items():
             file_path = os.path.join(BASE_DIR, filename)
